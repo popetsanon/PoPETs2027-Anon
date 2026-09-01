@@ -1,6 +1,6 @@
 # Format Leakage
 
-Anonymized version.
+Anonymized version of the code for the paper "Format-Preserving Encryption Creates a Privacy Attack Surface for Re-Identification".
 
 This project measures how much information is revealed by string formats. Two datasets are analyzed, but only one is included due to privacy concerns.
 
