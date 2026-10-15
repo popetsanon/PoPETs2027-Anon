@@ -59,7 +59,7 @@ def re_format(df: pd.DataFrame, map_func) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Reformatted dataframe with aggregated counts.
     """
-    formatted = df.copy()
+    formatted = df.dropna(subset=['Format property string']).copy()
     formatted['Format property string'] = formatted['Format property string'].astype(str).apply(map_func)
     formatted['Count'] = pd.to_numeric(formatted['Count'], errors='coerce').fillna(0) 
     return (
@@ -91,6 +91,7 @@ if __name__ == "__main__":
                            usecols=[0,1],
                            header=0)
 
+    rows = {}
     for sheet_name, df in sheets.items():
         map_func = get_map_function(sheet_name)
         
@@ -103,4 +104,17 @@ if __name__ == "__main__":
         unique_count = count_series.eq(1).sum()
         pct = (unique_count / total_count * 100) if total_count > 0 else 0.0
         shannon_entropy = -np.sum((count_values / total_count) * np.log2(count_values / total_count))
-        print(f"{sheet_name}: Total = {total_count}, Distinct = {distinct_count}, Unique Count = {unique_count}, Pct = {pct:.2f}%, Shannon = {shannon_entropy:.2f}")
+        min_leakage_uniform = np.log2(distinct_count)
+        
+        rows[sheet_name] = {
+            "Total": total_count,
+            "Distinct": distinct_count,
+            "Unique": unique_count,
+            "Pct": pct,
+            "Shannon": shannon_entropy,
+            "Min (Uniform prior)": min_leakage_uniform
+        }
+
+    statistics = pd.DataFrame(rows).T
+    statistics = statistics.astype({"Total": int, "Distinct": int, "Unique": int})
+    print(statistics.round(2))
