@@ -1,6 +1,6 @@
 # Format Leakage
 
-Anonymized version of the code for the paper "Format-Preserving Encryption Creates a Privacy Attack Surface for Re-Identification".
+Anonymized version.
 
 This project measures how much information is revealed by string formats. Two datasets are analyzed, but only one is included due to privacy concerns.
 
@@ -18,7 +18,7 @@ The public dataset (FEC) workflow is split across two notebooks:
 	- Outputs processed CSVs for use by the leakage notebook.
 
 2. `leakage_calc.ipynb`
-	- Loads the processed plaintext, format, and format-count tables.
+	- Loads the processed plaintext and format tables.
 	- Computes min-entropy of the plaintext attributes.
 	- Computes conditional min-entropy given the observed format.
     - Computes Shannon entropy of the format classes.
