@@ -103,18 +103,25 @@ if __name__ == "__main__":
         distinct_count = len(count_values)
         unique_count = count_series.eq(1).sum()
         pct = (unique_count / total_count * 100) if total_count > 0 else 0.0
-        shannon_entropy = -np.sum((count_values / total_count) * np.log2(count_values / total_count))
+        p_f = count_values / total_count
+
+        # Only format-class counts are available, so the prior is uniform over the
+        # records (every record is treated as a distinct, equally likely plaintext).
+        h_x = np.log2(total_count)
+        mutual_information = -np.sum(p_f * np.log2(p_f))
         min_leakage_uniform = np.log2(distinct_count)
-        
+
         rows[sheet_name] = {
             "Total": total_count,
             "Distinct": distinct_count,
             "Unique": unique_count,
             "Pct": pct,
-            "Shannon": shannon_entropy,
-            "Min (Uniform prior)": min_leakage_uniform
+            "I(X;F)": mutual_information,
+            "H_inf": h_x,
+            "L_inf": min_leakage_uniform,
         }
 
-    statistics = pd.DataFrame(rows).T
-    statistics = statistics.astype({"Total": int, "Distinct": int, "Unique": int})
+    statistics = pd.DataFrame.from_dict(rows, orient="index")
+    statistics = statistics.astype({"Total": int, "Distinct": int, "Unique": int, "Pct": float,
+                                    "I(X;F)": float, "H_inf": float, "L_inf": float})
     print(statistics.round(2))
